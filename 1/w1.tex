@@ -1,0 +1,199 @@
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage{quiver}
+\usepackage{Pack}
+\usepackage{PackMath}
+\usepackage[placement=bottom,angle=0,color=black!40,scale=3,hshift=88,vshift=5]{background}
+\usepackage{enumitem}
+\setlist{nosep}
+\usepackage{hyperref}
+\usepackage{cleveref}
+
+
+\usepackage{minted}
+\newcommand{\code}[1]{\texttt{#1}}
+% \newenvironment{codeblock}{\VerbatimEnvironment \begin{minted}[linenos,breaklines]{python}}{\end{minted}}
+
+
+\backgroundsetup{contents={-\thepage-}}
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+   \hskip -\arraycolsep
+   \let\@ifnextchar\new@ifnextchar
+   \array{#1}}
+\makeatother
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{Workshop 1}
+\fancyhead[CE,CO]{Jaden Long}
+\fancyhead[RE,LO]{Duke BioByte}
+%\fancyfoot[CE,CO]{}
+
+% For progress tracker
+\newcommand{\ns}{{\color{red} Not Started}}
+\newcommand{\ip}{{\color{orange} In Progress (Stuck)}}
+\newcommand{\td}{{\color{blue} In Progress (To-Do)}}
+\newcommand{\fin}{{\color{green} Finished}}
+\newcommand{\qm}{{\color{violet} Finshed, But In Doubt}}
+\newcommand{\contradiction}{\Rightarrow\!\Leftarrow}
+\renewcommand{\im}{\mathrm{im\,}}
+\renewcommand{\tilde}{\widetilde}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.5em}
+
+
+\usepackage{notomath}
+\usepackage{multicol}
+\newcommand{\Hint}{\textcolor{violet}{\textit{Hint: }}}
+\newcommand{\Solution}{\textcolor{MidnightBlue}{\textbf{Solution: }}}
+
+
+\title{\textbf{Talking to a Computer: Fundamentals of the Command Line}}
+\author{\textit{Computational Tools for the Working Biologist. Workshop 1}}
+\date{Jaden Long}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\vspace{1em}
+
+\noindent
+You heard about this great software tool, but you have no idea where to type all the monospaced text that appears in its tutorial. Let's solve that.
+
+\noindent
+\textbf{Central idea/technique:} Being able to run software from source code
+
+\textbf{Practice:}
+
+\begin{itemize}
+   \item Basics of command line: terminal, man, package manager, environment, text editor
+   \item Running softwares: git, GitHub, make, readme
+Command line scripting: shebang, variables, command substitution, redirection, piping, awk, grep
+\end{itemize}
+
+\section{Getting started}
+
+% The popular desktop operating systems can be roughly characterized into three major categories: Windows, MacOS, and Linux. Collectively, MacOS and Linux are called ``*NIX''\footnote{The interested audience can read up on the history of operating systems.}.
+
+Most softwares assume a *NIX operating system. That is, MacOS or Linux. We will do the same for this workshop. Following we will go over how to open the terminal. This is the only section where instructions differ for audience of different operating systems.
+
+\begin{itemize}
+   \item Windows users should install the latest version of \href{https://learn.microsoft.com/en-us/windows/wsl/install}{Windows Subsystem for Linux (WSL)}. \href{https://apps.microsoft.com/detail/9N0DX20HK701?hl=en-US&gl=US}{Windows Terminal} should also be nice, but takes a while to set up.
+   \item MacOS users have a built-in terminal which can be found in the folder \textit{Applications/Utilities} or via searching by spotlight.
+   \item Linux users can open their terminal by Ctrl+Alt+T.
+\end{itemize}
+
+Open up the command line, type \texttt{ls -l /}, and hit \texttt{<enter>}, you should see something like this:
+
+
+\begin{minted}[breaklines]{bash}
+$ ls -l /
+total 100
+lrwxrwxrwx   1 root root     7 Sep 29  2022 bin -> usr/bin
+drwxr-xr-x   4 root root  4096 Dec 26 08:29 boot
+drwxrwxr-x   2 root root  4096 Mar  1  2021 cdrom
+drwxr-xr-x  21 root root  6240 Dec 26 08:26 dev
+drwxrwxr-x 195 root root 12288 Dec 26 08:29 etc
+drwxr-xr-x   4 root root  4096 Feb  4  2022 home
+
+<Many more lines omitted>
+\end{minted}
+
+Congratulations, you just ran your first shell command!
+
+\section{Commands}
+
+Let's recap this command \texttt{ls -l /} more closely. It has three parts, separated by spaces: \texttt{ls}, \texttt{-l}, and \texttt{/}. The first part (\texttt{ls}) is the \textit{executable}, and the parts that follow (\texttt{-l /}) are the \textit{parameters}.
+
+\subsection{The Executable}
+
+\texttt{ls} is the executable program. It is just like an application you open on your computer, such as Google Chrome, except that this program is executed in the terminal.
+
+Your operating system has search paths for executables. Run the command \texttt{echo \$PATH} to see them: Mine looks like
+
+\begin{minted}[breaklines,breakanywhere]{bash}
+$ echo $PATH
+/home/longyuxi/.poetry/bin:/home/longyuxi/bin:/home/longyuxi/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/longyuxi/bin:/home/longyuxi/java/jdk-19.0.2/bin ...
+\end{minted}
+
+This produces a list of folders separated by colons. When you run the \texttt{ls} command in the shell, your operating system looks at each of these folders and see if the \texttt{ls} executable is in that folder, and executes the first \texttt{ls} executable it finds. To find exactly which \texttt{ls} you just executed, invoke the command
+
+\begin{minted}[breaklines]{bash}
+$ which ls
+/usr/bin/ls
+\end{minted}
+
+This tells us the \texttt{ls} executable we used is located at \texttt{/usr/bin/ls}. When executing an executable, we can also use its path (\cref*{sec:path}) to execute it. In other words, the command \texttt{/usr/bin/ls -l /} is equivalent to \texttt{ls -l /}.
+
+The audience interested in what \texttt{\$PATH} is can read more about \textit{environment variables}.
+
+\subsection{The Parameters}
+
+To find what parameters a command takes, one can usually call the command with the \texttt{-{}-help} parameter. For example,
+
+\begin{minted}[breaklines]{text}
+$ ls --help
+Usage: ls [OPTION]... [FILE]...
+List information about the FILEs (the current directory by default).
+Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.
+
+Mandatory arguments to long options are mandatory for short options too.
+  -a, --all                  do not ignore entries starting with .
+  -A, --almost-all           do not list implied . and ..
+      --author               with -l, print the author of each file
+  -b, --escape               print C-style escapes for nongraphic characters
+      --block-size=SIZE      with -l, scale sizes by SIZE when printing them;
+                               e.g., '--block-size=M'; see SIZE format below
+  -B, --ignore-backups       do not list implied entries ending with ~
+  -c                         with -lt: sort by, and show, ctime (time of last
+                               modification of file status information);
+                               with -l: show ctime and sort by name;
+                               otherwise: sort by ctime, newest first
+...
+\end{minted}
+
+A more standard way is to call \texttt{man <command>}, where \texttt{man} stands for ``manual''. For example,
+
+\begin{minted}[breaklines]{bash}
+$ man ls
+LS(1)                                                  User Commands                                                  LS(1)
+
+NAME
+       ls - list directory contents
+
+SYNOPSIS
+       ls [OPTION]... [FILE]...
+
+DESCRIPTION
+       List  information about the FILEs (the current directory by default).  Sort entries alphabetically if none of -cftu‐
+       vSUX nor --sort is specified.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -a, --all
+              do not ignore entries starting with .
+
+       -A, --almost-all
+              do not list implied . and ..
+
+       --author
+              with -l, print the author of each file
+
+       -b, --escape
+              print C-style escapes for nongraphic characters
+
+       --block-size=SIZE
+              with -l, scale sizes by SIZE when printing them; e.g., '--block-size=M'; see SIZE format below
+
+\end{minted}
+
+\todo{}
+
+\subsection{The Path} \label{sec:path}
+
+
+
+\end{document}
