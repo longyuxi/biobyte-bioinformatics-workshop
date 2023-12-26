@@ -69,9 +69,9 @@ You heard about this great software tool, but you have no idea where to type all
 \textbf{Practice:}
 
 \begin{itemize}
-   \item Basics of command line: terminal, man, package manager, environment, text editor
+   \item Basics of command line: terminal, man, package manager, text editor
    \item Running softwares: git, GitHub, make, readme
-Command line scripting: shebang, variables, command substitution, redirection, piping, awk, grep
+   \item Command line scripting*: shebang, variables, command substitution, redirection, piping, awk, grep
 \end{itemize}
 
 \section{Getting started}
@@ -130,7 +130,7 @@ This tells us the \texttt{ls} executable we used is located at \texttt{/usr/bin/
 
 The audience interested in what \texttt{\$PATH} is can read more about \textit{environment variables}.
 
-\subsection{The Parameters}
+\subsection{The Parameters} \label{sec:parameters}
 
 To find what parameters a command takes, one can usually call the command with the \texttt{-{}-help} parameter. For example,
 
@@ -157,7 +157,7 @@ Mandatory arguments to long options are mandatory for short options too.
 
 A more standard way is to call \texttt{man <command>}, where \texttt{man} stands for ``manual''. For example,
 
-\begin{minted}[breaklines]{bash}
+\begin{minted}[breaklines]{text}
 $ man ls
 LS(1)                                                  User Commands                                                  LS(1)
 
@@ -188,12 +188,137 @@ DESCRIPTION
        --block-size=SIZE
               with -l, scale sizes by SIZE when printing them; e.g., '--block-size=M'; see SIZE format below
 
+...
 \end{minted}
 
-\todo{}
+Note that in \texttt{man <command>}, the output is displayed with \texttt{less}, which is a very convenient command-line viewer for large texts. Use the keys \texttt{j} and \texttt{k} to navigate down or up, and \texttt{q} to quit. Its most commonly used controls can be found widely on the Internet (e.g., \href{https://linuxize.com/post/less-command-in-linux/#less-commands}{here}). and of course, you can run \texttt{man less} to view the manual of \texttt{less}.
+
+Each parameter begins with a single or double dash and can be chained together. For example, if I want to list the files
+
+\begin{itemize}
+   \item In a long format (\texttt{-l});
+   \item In a human-readable format (\texttt{-h});
+   \item Sorted by time (\texttt{-t});
+   \item In reverse order (\texttt{-r}),
+\end{itemize}
+
+I can run the command \texttt{ls -lhtr}, which is equivalent to \texttt{ls -l -h -t -r}.
+
+Often there are single letter and full word versions of the same parameter, where the single letter version is prefixed with a single dash and the full word version is prefixed with a double dash. For example, \texttt{-a} and \texttt{-{}-all} are equivalent. Finally, some parameters allow you to specify an additional value with that parameter (e.g., \texttt{--block-size=SIZE}, where you can change the \texttt{SIZE} part to a value for your purposes).
 
 \subsection{The Path} \label{sec:path}
 
+Recapitulating, we saw that \texttt{ls} takes \texttt{[OPTION]} and \texttt{[FILE]}. We have dealt with the \texttt{[OPTION]} part. For the \texttt{[FILE]} part, we can specify the path to a file or folder for \texttt{ls} to list. We can also not specify a directory here, so that \texttt{ls} lists files under the current directory.
+
+Paths can be specified either relatively or absolutely.
+
+\begin{itemize}
+   \item Absolute paths start with a slash (\texttt{/}) and specify the path from the root directory. For example, in the command we executed earlier, \texttt{ls -l /}, the path \texttt{/} means we are listing the root directory.
+   \item All other paths are relative paths, which means they are specified relative to the current working directory. You can find the current working directory by running the command \texttt{pwd} (print working directory).
+\end{itemize}
+
+For example, currently I have
+
+\begin{minted}[breaklines]{bash}
+$ pwd
+/home/longyuxi
+\end{minted}
+
+And when I run \texttt{ls}, I see that \textit{Downloads} folder is under this directory:
+
+\begin{minted}[breaklines]{bash}
+$ ls -l
+total 461776
+
+...
+drwxr-xr-x 12 longyuxi longyuxi     61440 Dec 22 15:01  Downloads
+...
+\end{minted}
+
+To list my downloads folder, it is then equivalent to run either of the following commands:
+
+\begin{itemize}
+   \item \texttt{ls -l Downloads}
+   \item \texttt{ls -l /home/longyuxi/Downloads}
+\end{itemize}
+
+\section{A few more things*}
+
+Below are a few miscellaneous things before we start running softwares.
+
+\subsection{Some important commands}
+
+I will only give a synopsis for their purpose. Read the manual for details on how to use them.
+
+\begin{itemize}
+   \item \texttt{ls}: lists files
+   \item \texttt{vim}/\texttt{emacs}/\texttt{nano}: text editor
+   \item \texttt{pwd}: prints current directory
+   \item \texttt{cd}: change directory
+   \item \texttt{top}/\texttt{htop}/\texttt{nvtop}: CPU/GPU usage monitors
+   \item \texttt{code}: if you have VS Code installed, this opens VS Code in a specified directory
+   \item \texttt{df}: disk space usage
+   \item \texttt{du}: disk usage of folder
+   \item \texttt{less}: view text file
+   \item \texttt{echo}: print out things. Useful for writing something simple to file with redirection (\cref{sec:command-line-scripting}).
+   \item \texttt{rg}: search texts for string
+   \item \texttt{fd}: search directory for file with name
+\end{itemize}
+
+\href{https://github.com/BurntSushi/ripgrep}{\texttt{rg}} and \href{https://github.com/sharkdp/fd}{\texttt{fd}} are not bundled with your operating system and needs to be installed manually.
+
+\subsection{Package manager}
+
+The easy way to install softwares is through a package manager (we will see the hard way later). Linux distributions often come with a package manager. For example, Ubuntu has \texttt{apt}. A good package manager for MacOS is \href{https://brew.sh/}{Homebrew}. Now, say we want to install the funny software \textit{cowsay}, we can look up \textit{cowsay} on the package indices of \texttt{apt} or \texttt{brew}, and install it via (on Ubuntu) \texttt{sudo apt install cowsay} or (on MacOS) \texttt{brew install cowsay}. Then you can use \texttt{cowsay} as you would with any other preinstalled software:
+
+\begin{minted}[breaklines]{text}
+$ cowsay amogus
+ ________
+< amogus >
+ --------
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     ||
+\end{minted}
+
+\subsection{Text editor}
+
+It is often convenient to directly edit text files from within the command line. The most newbie-friendly command-line text editor is \texttt{nano}. For example, to write something into a file called \texttt{test.txt}, one can do
+
+\begin{enumerate}
+   \item \texttt{nano test.txt}
+   \item Write something
+   \item Exit and save the file by \texttt{<CTRL-X>} followed by \texttt{Y}.
+\end{enumerate}
+
+You can check that this file is indeed present by \texttt{ls -l test.txt} and \texttt{less test.txt}.
+
+There are more efficient terminal-based text editors, such as \textit{vim} and \textit{emacs}, which take a learning curve but is worth the time.
+
+\subsection{Command line scripting} \label{sec:command-line-scripting}
+
+For batch processing in the command line, it is convenient to write scripts. Look up any tutorial on the Internet for details. In particular, I find the following topics to be important:
+
+\begin{itemize}
+   \item Shebang
+   \item Variables
+   \item Command substitution
+   \item Output redirection
+   \item Piping
+   \item \texttt{awk} and \texttt{grep}
+\end{itemize}
+
+\subsection{File permissions}
+
+The first column from the \texttt{ls -l} is rather important. Read \href{https://www.redhat.com/sysadmin/linux-file-permissions-explained}{this article} for details.
+
+\section{Running softwares}
+
+Let's install and run a software from beginning to end. Here, we emulate the scenario of 
+
+Suppose you want to reproduce a work on genome alignment, and the paper you found indicates that it ran a software called \textit{BWA}.
 
 
 \end{document}
