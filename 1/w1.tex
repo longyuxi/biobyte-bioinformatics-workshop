@@ -89,7 +89,7 @@ Most softwares assume a *NIX operating system. That is, MacOS or Linux. We will 
 Open up the command line, type \texttt{ls -l /}, and hit \texttt{<enter>}, you should see something like this:
 
 
-\begin{minted}[breaklines]{bash}
+\begin{minted}[breaklines]{text}
 $ ls -l /
 total 100
 lrwxrwxrwx   1 root root     7 Sep 29  2022 bin -> usr/bin
@@ -114,14 +114,14 @@ Let's recap this command \texttt{ls -l /} more closely. It has three parts, sepa
 
 Your operating system has search paths for executables. Run the command \texttt{echo \$PATH} to see them: Mine looks like
 
-\begin{minted}[breaklines,breakanywhere]{bash}
+\begin{minted}[breaklines,breakanywhere]{text}
 $ echo $PATH
 /home/longyuxi/.poetry/bin:/home/longyuxi/bin:/home/longyuxi/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/longyuxi/bin:/home/longyuxi/java/jdk-19.0.2/bin ...
 \end{minted}
 
 This produces a list of folders separated by colons. When you run the \texttt{ls} command in the shell, your operating system looks at each of these folders and see if the \texttt{ls} executable is in that folder, and executes the first \texttt{ls} executable it finds. To find exactly which \texttt{ls} you just executed, invoke the command
 
-\begin{minted}[breaklines]{bash}
+\begin{minted}[breaklines]{text}
 $ which ls
 /usr/bin/ls
 \end{minted}
@@ -219,14 +219,14 @@ Paths can be specified either relatively or absolutely.
 
 For example, currently I have
 
-\begin{minted}[breaklines]{bash}
+\begin{minted}[breaklines]{text}
 $ pwd
 /home/longyuxi
 \end{minted}
 
 And when I run \texttt{ls}, I see that \textit{Downloads} folder is under this directory:
 
-\begin{minted}[breaklines]{bash}
+\begin{minted}[breaklines]{text}
 $ ls -l
 total 461776
 
@@ -242,11 +242,11 @@ To list my downloads folder, it is then equivalent to run either of the followin
    \item \texttt{ls -l /home/longyuxi/Downloads}
 \end{itemize}
 
-\section{A few more things*}
+\section{A few more things}
 
 Below are a few miscellaneous things before we start running softwares.
 
-\subsection{Some important commands}
+\subsection{Some important commands*}
 
 I will only give a synopsis for their purpose. Read the manual for details on how to use them.
 
@@ -255,21 +255,23 @@ I will only give a synopsis for their purpose. Read the manual for details on ho
    \item \texttt{vim}/\texttt{emacs}/\texttt{nano}: text editor
    \item \texttt{pwd}: prints current directory
    \item \texttt{cd}: change directory
+   \item \texttt{mkdir}: create empty directory
+   \item \texttt{rm}: remove file, or directory (with \texttt{-r})
    \item \texttt{top}/\texttt{htop}/\texttt{nvtop}: CPU/GPU usage monitors
    \item \texttt{code}: if you have VS Code installed, this opens VS Code in a specified directory
    \item \texttt{df}: disk space usage
    \item \texttt{du}: disk usage of folder
    \item \texttt{less}: view text file
-   \item \texttt{echo}: print out things. Useful for writing something simple to file with redirection (\cref{sec:command-line-scripting}).
+   \item \texttt{echo}: print out things. Useful for writing something simple to file with redirection (\cref*{sec:command-line-scripting}).
    \item \texttt{rg}: search texts for string
    \item \texttt{fd}: search directory for file with name
 \end{itemize}
 
 \href{https://github.com/BurntSushi/ripgrep}{\texttt{rg}} and \href{https://github.com/sharkdp/fd}{\texttt{fd}} are not bundled with your operating system and needs to be installed manually.
 
-\subsection{Package manager}
+\subsection{Package manager} \label{sec:package-manager}
 
-The easy way to install softwares is through a package manager (we will see the hard way later). Linux distributions often come with a package manager. For example, Ubuntu has \texttt{apt}. A good package manager for MacOS is \href{https://brew.sh/}{Homebrew}. Now, say we want to install the funny software \textit{cowsay}, we can look up \textit{cowsay} on the package indices of \texttt{apt} or \texttt{brew}, and install it via (on Ubuntu) \texttt{sudo apt install cowsay} or (on MacOS) \texttt{brew install cowsay}. Then you can use \texttt{cowsay} as you would with any other preinstalled software:
+The easy way to install softwares is through a package manager (we will see the hard way later). Linux distributions often come with a package manager. For example, Ubuntu has \texttt{apt}. A good package manager for MacOS is \href{https://brew.sh/}{Homebrew}. Now, say we want to install the funny software \textit{cowsay}, we can look up \textit{cowsay} on the package indices of \texttt{apt} or \texttt{brew}, and install it via (on Ubuntu) \texttt{sudo apt install cowsay} or (on MacOS) \texttt{brew install cowsay}. Then you can use \texttt{cowsay} directly in the terminal:
 
 \begin{minted}[breaklines]{text}
 $ cowsay amogus
@@ -297,7 +299,7 @@ You can check that this file is indeed present by \texttt{ls -l test.txt} and \t
 
 There are more efficient terminal-based text editors, such as \textit{vim} and \textit{emacs}, which take a learning curve but is worth the time.
 
-\subsection{Command line scripting} \label{sec:command-line-scripting}
+\subsection{Command line scripting*} \label{sec:command-line-scripting}
 
 For batch processing in the command line, it is convenient to write scripts. Look up any tutorial on the Internet for details. In particular, I find the following topics to be important:
 
@@ -312,13 +314,113 @@ For batch processing in the command line, it is convenient to write scripts. Loo
 
 \subsection{File permissions}
 
-The first column from the \texttt{ls -l} is rather important. Read \href{https://www.redhat.com/sysadmin/linux-file-permissions-explained}{this article} for details.
+The first column from the \texttt{ls -l} is rather important. Read \href{https://www.redhat.com/sysadmin/linux-file-permissions-explained}{this article} for details. This will become relevant when running softwares.
 
 \section{Running softwares}
 
-Let's install and run a software from beginning to end. Here, we emulate the scenario of 
+Let's install and run a software from beginning to end. Here, we emulate the scenario of reproducing someone else's analysis from a paper.
 
-Suppose you want to reproduce a work on genome alignment, and the paper you found indicates that it ran a software called \textit{BWA}.
+Suppose you want to reproduce a work on genome alignment, and the paper you found indicates that the authors ran a software called \textit{BWA}.
+
+\subsection{Researching}
+
+Use the search engine to find information about this software. In particular,
+
+\begin{itemize}
+   \item Is this software command-line based, or graphics-based? Unless indicated otherwise, softwares are usually command-line based. For the following tutorial, we assume that the software of interest is command-line based.
+   \item Is this software proprietary or open-source?
+   \item Where is the documentation?
+\end{itemize}
+
+Looking up \textit{BWA}, we can find \href{https://bio-bwa.sourceforge.net/}{its website} and \href{https://github.com/lh3/bwa}{its GitHub repository}.
+
+Every software repository should have a \textit{README file} at its base folder, which documents necessary information about the software, like installation instructions and license information. GitHub conveniently renders this README file on the webpage. Looking more closely, we see that BWA offers an \href{https://github.com/lh3/bwa}{installation instruction}.
+
+
+\subsection{Installing}
+
+It is often best to directly follow the installation instruction given by the original author. However, it can be more convenient to install via a package manager (\cref*{sec:package-manager}). Softwares are written in \textit{source codes}, which are human readable/writable files. Source codes are compiled into binaries, which contain instructions for the machine to execute. This process is often also called \textit{building} the software.
+
+The installation instruction for \textit{BWA} reads:
+
+\begin{minted}[breaklines]{text}
+git clone https://github.com/lh3/bwa.git
+cd bwa; make
+./bwa index ref.fa
+./bwa mem ref.fa read-se.fq.gz | gzip -3 > aln-se.sam.gz
+./bwa mem ref.fa read1.fq read2.fq | gzip -3 > aln-pe.sam.gz
+\end{minted}
+
+The first two lines explain how to download and build the software, and the last three lines show an example use case (see \cref*{sec:command-line-scripting} for what \texttt{|} and \texttt{>} in these commands mean). Let's focus on the first two lines.
+
+\texttt{git clone} downloads (``clones'') this repository. First, install git via your package manager. Then navigate to a directory of your choice in the terminal with \texttt{cd}, and execute this command. After the command is done, we can see the bwa folder in current directory.
+
+\begin{minted}[breaklines]{text}
+$ ls -l
+total 4
+drwxrwxr-x 5 longyuxi longyuxi 4096 Dec 26 13:35 bwa
+\end{minted}
+
+Next, execute \texttt{cd bwa; make} will build \texttt{bwa}. The output binary can then be located in the base folder of this directory.
+
+\begin{minted}[breaklines]{text}
+$ ./bwa
+
+Program: bwa (alignment via Burrows-Wheeler transformation)
+Version: 0.7.17-r1198-dirty
+Contact: Heng Li <hli@ds.dfci.harvard.edu>
+
+Usage:   bwa <command> [options]
+
+Command: index         index sequences in the FASTA format
+         mem           BWA-MEM algorithm
+         fastmap       identify super-maximal exact matches
+         pemerge       merge overlapping paired ends (EXPERIMENTAL)
+         aln           gapped/ungapped alignment
+         samse         generate alignment (single ended)
+         sampe         generate alignment (paired ended)
+         bwasw         BWA-SW for long queries (DEPRECATED)
+
+         shm           manage indices in shared memory
+         fa2pac        convert FASTA to PAC format
+         pac2bwt       generate BWT from PAC
+         pac2bwtgen    alternative algorithm for generating BWT
+         bwtupdate     update .bwt to the new format
+         bwt2sa        generate SA from BWT and Occ
+
+Note: To use BWA, you need to first index the genome with `bwa index'.
+      There are three alignment algorithms in BWA: `mem', `bwasw', and
+      `aln/samse/sampe'. If you are not sure which to use, try `bwa mem'
+      first. Please `man ./bwa.1' for the manual.
+\end{minted}
+
+We can also run each of the commands to the documentation of that particular command. For example,
+
+\begin{minted}[breaklines]{text}
+./bwa index
+
+Usage:   bwa index [options] <in.fasta>
+
+Options: -a STR    BWT construction algorithm: bwtsw, is or rb2 [auto]
+         -p STR    prefix of the index [same as fasta name]
+         -b INT    block size for the bwtsw algorithm (effective with -a bwtsw) [10000000]
+         -6        index files named as <in.fasta>.64.* instead of <in.fasta>.* 
+
+Warning: `-a bwtsw' does not work for short genomes, while `-a is' and
+         `-a div' do not work not for long genomes.
+\end{minted}
+
+Great, we just built BWA! And we also see its documentation on how to run it.
+
+\subsection{A deeper look at git and make*}
+
+\textit{Git} is a version control system. There are plenty of blogs online detailing it (\href{https://webtuu.com/blog/04/a-laymans-introduction-to-git}{example}).
+
+\textit{GitHub} is an online service hosting Git repositories.
+
+\textit{make} is a build system, and it takes a \texttt{Makefile}. There are also plenty of blogs on it (\href{https://matt.might.net/articles/intro-to-make/}{example}).
+
+Underlying the \texttt{make} command executed in our installation of BWA is \textit{gcc}, the GNU compiler for C code, which compiled the source code of BWA written in the C programming language to an executable.
 
 
 \end{document}
