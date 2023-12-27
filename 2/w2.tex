@@ -1,0 +1,103 @@
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage{quiver}
+\usepackage{Pack}
+\usepackage{PackMath}
+\usepackage[placement=bottom,angle=0,color=black!40,scale=3,hshift=88,vshift=5]{background}
+\usepackage{enumitem}
+\setlist{nosep}
+\usepackage{hyperref}
+\usepackage{cleveref}
+
+
+\usepackage{minted}
+\newcommand{\code}[1]{\texttt{#1}}
+% \newenvironment{codeblock}{\VerbatimEnvironment \begin{minted}[linenos,breaklines]{python}}{\end{minted}}
+
+
+\backgroundsetup{contents={-\thepage-}}
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+   \hskip -\arraycolsep
+   \let\@ifnextchar\new@ifnextchar
+   \array{#1}}
+\makeatother
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{Workshop 2}
+\fancyhead[CE,CO]{Yuxi (Jaden) Long}
+\fancyhead[RE,LO]{Duke BioByte}
+%\fancyfoot[CE,CO]{}
+
+% For progress tracker
+\newcommand{\ns}{{\color{red} Not Started}}
+\newcommand{\ip}{{\color{orange} In Progress (Stuck)}}
+\newcommand{\td}{{\color{blue} In Progress (To-Do)}}
+\newcommand{\fin}{{\color{green} Finished}}
+\newcommand{\qm}{{\color{violet} Finshed, But In Doubt}}
+\newcommand{\contradiction}{\Rightarrow\!\Leftarrow}
+\renewcommand{\im}{\mathrm{im\,}}
+\renewcommand{\tilde}{\widetilde}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.5em}
+
+
+\usepackage{notomath}
+\usepackage{multicol}
+\newcommand{\Hint}{\textcolor{violet}{\textit{Hint: }}}
+\newcommand{\Solution}{\textcolor{MidnightBlue}{\textbf{Solution: }}}
+
+
+\title{\textbf{Sequence Alignment and Variant Calling}}
+\author{\textit{Computational Tools for the Working Biologist. Workshop 2}}
+\date{Yuxi (Jaden) Long}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\vspace{1em}
+
+\noindent
+Short-read DNA or RNA sequencing is cheap and fast, and generates a lot of data. As a result, genomics is the most relevant and fundamental computational task that a biologist would encounter.
+
+\noindent
+\textbf{Central idea/technique:} Understand the information in genomic sequencing raw data, and learn tools to manipulate them.
+
+\textbf{Practice:} Perform variant calling on a sequencing datum from beginning to end.
+
+\begin{itemize}
+   \item Quality control: fastp
+   \item Reference data: NCBI GenBank, NCBI SRA
+   \item Reference based sequence alignment: BWA
+   \item Viewing your alignment: IGV
+   \item Alignment processing: samtools, picard
+   \item Variant calling: GATK HaplotypeCaller
+\end{itemize}
+
+\textit{This workflow is largely adapted from the independent study of Hector de Galard in Fall 2019.}
+
+\section{Short read sequencing}
+
+In principle, genome sequencing can be considered as measuring the nucleotide sequences of fragments that come the genome of interest. Each such measurement is called a \textit{read}. Naturally, each read is associated with a \textit{read length}, which is the length of each fragment sequenced, measured in base pairs.
+
+\begin{table}[]
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+Sequencing technologies & Short-read & Long-read   \\
+ &  &    \\
+ &  &    \\
+ &  &
+\end{tabular}
+\end{center}
+\end{table}
+
+
+% With our current technology, it is much cheaper to perform \textit{short-read sequencing} than \textit{long-read sequencing}.
+
+% \textit{Short-read sequencing} is dominated by Illumina machines. The technology is amazing, but to a bioinformatics standpoint, what matters
+
+\end{document}

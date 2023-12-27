@@ -1,0 +1,271 @@
+\ProvidesPackage{PackMath}
+
+%% SIMBOLOGIA MATEMATICA
+\usepackage{amscd}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{latexsym}
+\usepackage{mathtools}
+\usepackage{wasysym}
+\usepackage{upgreek}
+\usepackage[mathscr]{euscript}
+\usepackage{nicematrix}
+%%%% DIAGRAMAS
+\usepackage{xy}
+\usepackage{tikz}
+\usetikzlibrary{cd,matrix,arrows}
+
+
+%% COMANDOS MATEMATICAS
+%--------------------------------------------------------------------------- BB Letters
+%\newcommand{\A}{\ensuremath{\mathbb{A}}}
+\renewcommand{\AA}{\mathbb{A}}
+\newcommand{\BB}{\mathbb{B}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\DD}{\mathbb{D}}
+\newcommand{\EE}{\mathbb{E}}
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\GG}{\mathbb{G}}
+\newcommand{\HH}{\mathbb{H}}
+\newcommand{\II}{\mathbb{I}}
+\newcommand{\JJ}{\mathbb{J}}
+\newcommand{\KK}{\mathbb{K}}
+\newcommand{\LL}{\mathbb{L}}
+\newcommand{\MM}{\mathbb{M}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\OO}{\mathbb{O}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\RR}{\mathbb{R}}
+\renewcommand{\SS}{\mathbb{S}}
+\newcommand{\TT}{\mathbb{T}}
+\newcommand{\UU}{\mathbb{U}}
+\newcommand{\VV}{\mathbb{V}}
+\newcommand{\WW}{\mathbb{W}}
+\newcommand{\XX}{\mathbb{X}}
+\newcommand{\YY}{\mathbb{Y}}
+\newcommand{\ZZ}{\mathbb{Z}}
+
+%--------------------------------------------------------------------------- Euscript Letters
+\newcommand{\sA}{\mathscr{A}}
+\newcommand{\sB}{\mathscr{B}}
+\newcommand{\sC}{\mathscr{C}}
+\newcommand{\sD}{\mathscr{D}}
+\newcommand{\sE}{\mathscr{E}}
+\newcommand{\sF}{\mathscr{F}}
+\newcommand{\sG}{\mathscr{G}}
+\newcommand{\sH}{\mathscr{H}}
+\newcommand{\sI}{\mathscr{I}}
+\newcommand{\sJ}{\mathscr{J}}
+\newcommand{\sK}{\mathscr{K}}
+\newcommand{\sL}{\mathscr{L}}
+\newcommand{\sM}{\mathscr{M}}
+\newcommand{\sN}{\mathscr{N}}
+\newcommand{\sO}{\mathscr{O}}
+\newcommand{\sP}{\mathscr{P}}
+\newcommand{\sQ}{\mathscr{Q}}
+\newcommand{\sR}{\mathscr{R}}
+\newcommand{\sS}{\mathscr{S}}
+\newcommand{\sT}{\mathscr{T}}
+\newcommand{\sU}{\mathscr{U}}
+\newcommand{\sV}{\mathscr{V}}
+\newcommand{\sW}{\mathscr{W}}
+\newcommand{\sX}{\mathscr{X}}
+\newcommand{\sY}{\mathscr{Y}}
+\newcommand{\sZ}{\mathscr{Z}}
+
+%--------------------------------------------------------------------------- Calligraphic Letters
+\newcommand{\cA}{\mathcal{A}}
+\newcommand{\cB}{\mathcal{B}}
+\newcommand{\cC}{\mathcal{C}}
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\cE}{\mathcal{E}}
+\newcommand{\cF}{\mathcal{F}}
+\newcommand{\cG}{\mathcal{G}}
+\newcommand{\cH}{\mathcal{H}}
+\newcommand{\cI}{\mathcal{I}}
+\newcommand{\cJ}{\mathcal{J}}
+\newcommand{\cK}{\mathcal{K}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\cM}{\mathcal{M}}
+\newcommand{\cN}{\mathcal{N}}
+\newcommand{\cO}{\mathcal{O}}
+\newcommand{\cP}{\mathcal{P}}
+\newcommand{\cQ}{\mathcal{Q}}
+\newcommand{\cR}{\mathcal{R}}
+\newcommand{\cS}{\mathcal{S}}
+\newcommand{\cT}{\mathcal{T}}
+\newcommand{\cU}{\mathcal{U}}
+\newcommand{\cV}{\mathcal{V}}
+\newcommand{\cW}{\mathcal{W}}
+\newcommand{\cX}{\mathcal{X}}
+\newcommand{\cY}{\mathcal{Y}}
+\newcommand{\cZ}{\mathcal{Z}}
+
+%--------------------------------------------------------------------------- Bold Letters
+\newcommand{\bA}{\mathbf{A}}
+\newcommand{\bB}{\mathbf{B}}
+\newcommand{\bC}{\mathbf{C}}
+\newcommand{\bD}{\mathbf{D}}
+\newcommand{\bE}{\mathbf{E}}
+\newcommand{\bF}{\mathbf{F}}
+\newcommand{\bG}{\mathbf{G}}
+\newcommand{\bH}{\mathbf{H}}
+\newcommand{\bI}{\mathbf{I}}
+\newcommand{\bJ}{\mathbf{J}}
+\newcommand{\bK}{\mathbf{K}}
+\newcommand{\bL}{\mathbf{L}}
+\newcommand{\bM}{\mathbf{M}}
+\newcommand{\bN}{\mathbf{N}}
+\newcommand{\bO}{\mathbf{O}}
+\newcommand{\bP}{\mathbf{P}}
+\newcommand{\bQ}{\mathbf{Q}}
+\newcommand{\bR}{\mathbf{R}}
+\newcommand{\bS}{\mathbf{S}}
+\newcommand{\bT}{\mathbf{T}}
+\newcommand{\bU}{\mathbf{U}}
+\newcommand{\bV}{\mathbf{V}}
+\newcommand{\bW}{\mathbf{W}}
+\newcommand{\bX}{\mathbf{X}}
+\newcommand{\bY}{\mathbf{Y}}
+\newcommand{\bZ}{\mathbf{Z}}
+
+%--------------------------------------------------------------------------- Dissertation
+\DeclareMathOperator{\Azu}{Az}%Azumaya
+\DeclareMathOperator{\Br}{Br}%Brauer
+\DeclareMathOperator{\cl}{cl}%class of Azu alg in Brauer group
+\DeclareMathOperator{\Kro}{\mathcal{K}}%Kronecker
+\DeclareMathOperator{\Bn}{\beta}%Bockstein
+\DeclareMathOperator{\RBn}{\tilde{\beta}}%Bockstein irreducida
+\DeclareMathOperator{\ind}{ind}%index
+\DeclareMathOperator{\per}{per}%period
+\DeclareMathOperator{\tors}{tors}%torsion
+\DeclareMathOperator{\topo}{top}%topological
+\DeclareMathOperator{\esta}{stab}%stable morphism
+\DeclareMathOperator{\diag}{diag}%notation diag for diagonal matrices
+\DeclareMathOperator{\Tr}{T}%
+%
+\DeclareMathOperator{\tr}{tr}%point
+\DeclareMathOperator{\M}{M}%matrix group
+\DeclareMathOperator{\Mat}{Mat}
+\DeclareMathOperator{\GL}{GL}
+\DeclareMathOperator{\PGL}{PGL}
+\DeclareMathOperator{\SL}{SL}
+\DeclareMathOperator{\PSL}{PSL}
+\DeclareMathOperator{\U}{U}
+\DeclareMathOperator{\PU}{PU}
+\DeclareMathOperator{\SU}{SU}
+\DeclareMathOperator{\PSU}{PSU}
+\DeclareMathOperator{\Or}{O}
+\DeclareMathOperator{\PO}{PO}
+\DeclareMathOperator{\SO}{SO}
+\DeclareMathOperator{\PSO}{PSO}
+\DeclareMathOperator{\Spin}{Spin}
+\DeclareMathOperator{\USp}{USp}
+\DeclareMathOperator{\Sp}{Sp}
+\DeclareMathOperator{\PSp}{PSp}
+\DeclareMathOperator{\End}{End}
+\DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\Inn}{Inn}
+\DeclareMathOperator{\Int}{Int}
+
+\newcommand{\fM}[1]{\M(#1,\CC)}
+\newcommand{\fGL}[1]{\GL(#1,\CC)}
+\newcommand{\fSL}[1]{\SL(#1,\CC)}
+\newcommand{\fPGL}[1]{\PGL(#1,\CC)}
+\newcommand{\fU}[1]{\U(#1,\CC)}
+\newcommand{\fSU}[1]{\SU(#1,\CC)}
+\newcommand{\fPU}[1]{\PU(#1,\CC)}
+\newcommand{\fO}[1]{\Or(#1,\CC)}
+\newcommand{\fPO}[1]{\PO(#1,\CC)}
+\newcommand{\fSO}[1]{\SO(#1,\CC)}
+\newcommand{\fPSO}[1]{\PSO(#1,\CC)}
+\newcommand{\fSp}[1]{\Sp(#1,\CC)}
+\newcommand{\fPSp}[1]{\PSp(#1,\CC)}
+\newcommand{\sm}[2]{V_{#1}(\HH^{#2})}
+\newcommand{\gm}[2]{G_{#1}(\HH^{#2})}
+
+%--------------------------------------------------------------------------- Algebraic Topology
+\newcommand{\CP}{\mathbb{C}\mathrm{P}}%CP
+\newcommand{\RP}{\mathbb{R}\mathrm{P}}%RP
+%
+\DeclareMathOperator{\pt}{pt}%point
+\DeclareMathOperator{\B}{B}%Classifying functor
+\DeclareMathOperator{\K}{K}%Eilenberg-MacLane space K(G,n)
+
+%--------------------------------------------------------------------------- Algebraic Geometry
+\DeclareMathOperator{\et}{\text{é}t}%
+\DeclareMathOperator{\Nis}{Nis}%
+\DeclareMathOperator{\Zar}{Zar}%
+\DeclareMathOperator{\Spec}{Spec}%
+\DeclareMathOperator{\Sm}{\mathsf{Sm}}%Smooth varieties
+\DeclareMathOperator{\Sch}{Sch}%Schemes
+
+%--------------------------------------------------------------------------- Category Theory
+\DeclareMathOperator{\Set}{Set}
+\DeclareMathOperator{\Grp}{Grp}
+\DeclareMathOperator{\Ab}{Ab}
+\DeclareMathOperator{\Mod}{Mod}
+\DeclareMathOperator{\alg}{alg}
+\DeclareMathOperator{\Pre}{Pre}
+\DeclareMathOperator{\Ds}{\Delta}
+\DeclareMathOperator{\s}{s}%simplicial cat or stable morphism
+\DeclareMathOperator{\sk}{sk}%skeleton
+\DeclareMathOperator{\Hy}{H}%homology - cohomology
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\Tor}{Tor}
+\DeclareMathOperator{\Ext}{Ext}
+\DeclareMathOperator{\Ker}{Ker}
+\DeclareMathOperator{\im}{Im}
+\DeclareMathOperator{\Coker}{Coker}
+\DeclareMathOperator{\Fun}{Fun}%category of functors
+\DeclareMathOperator{\op}{\text{op}}%opposite category
+\newcommand{\cat}[1]{\mathbf{#1}}%category
+
+%--------------------------------------------------------------------------- Miscellany
+\newcommand{\tensor}{\otimes}%tensor
+\newcommand{\stensor}{\boxtimes}%square tensor
+\newcommand{\splus}{\boxplus}%tensor
+\newcommand{\iso}{\cong}%isomorphism
+\newcommand{\into}{\hookrightarrow}%arrow injective
+\newcommand{\onto}{\twoheadrightarrow}%arrow surjective
+%
+\DeclareMathOperator{\id}{id}%identity functor
+\DeclareMathOperator{\deter}{det}%determinant
+\DeclareMathOperator{\dime}{dim}%dimension
+\DeclareMathOperator{\m}{mult}
+\DeclareMathOperator{\proj}{proj}%projection
+\DeclareMathOperator{\red}{red}%reduction
+\DeclareMathOperator*{\colim}{co{\lim}}
+\DeclareMathOperator{\lcm}{lcm}
+%
+
+%%TEOREMAS Y DEFINICIONES
+%\newtheorem{<name>}{<heading>}[<counter>]
+
+\theoremstyle{plain}
+		\newtheorem{theorem}{Theorem}[section] %can be changed to 'subsection' for 3-number numbering.
+		\newtheorem{lemma}[theorem]{Lemma}		
+		\newtheorem{corollary}[theorem]{Corollary}
+		\newtheorem{proposition}[theorem]{Proposition}
+		\newtheorem*{claim*}{Claim} %Claim
+		\newtheorem*{theorem*}{Theorem}
+
+\theoremstyle{definition}
+		\newtheorem{definition}[theorem]{Definition}
+		\newtheorem{construction}[theorem]{Construction}
+		\newtheorem{notation}[theorem]{Notation}
+		\newtheorem{convention}[theorem]{Convention}
+
+\theoremstyle{remark}
+		\newtheorem{remark}[theorem]{Remark}
+		\newtheorem{example}[theorem]{Example}
+		\newtheorem{extension}[theorem]{Extension}		
+		\newtheorem{entry}[theorem]{}
+		\newtheorem{claim}[theorem]{Claim}
+		\newtheorem{question}[theorem]{Question}
+		\newtheorem{problem}[theorem]{Problem}
+		\newtheorem{answer}[theorem]{Answer}
+		\newtheorem{conjecture}[theorem]{Conjecture}
