@@ -8,7 +8,7 @@
 \setlist{nosep}
 \usepackage{hyperref}
 \usepackage{cleveref}
-
+\usepackage{makecell}
 
 \usepackage{minted}
 \newcommand{\code}[1]{\texttt{#1}}
@@ -81,18 +81,22 @@ Short-read DNA or RNA sequencing is cheap and fast, and generates a lot of data.
 
 \section{Short read sequencing}
 
-In principle, genome sequencing can be considered as measuring the nucleotide sequences of fragments that come the genome of interest. Each such measurement is called a \textit{read}. Naturally, each read is associated with a \textit{read length}, which is the length of each fragment sequenced, measured in base pairs.
+You have probably heard of Sanger sequencing from biology class. Sanger sequencing is considered the ``first generation'' of sequencing technologies. Later technologies improved on the \textit{throughput}, which is the amount of data generated per sequencing run, and the large amount of data generated allowed for amazing new research insights made by researchers around the world, but also necessitated the use of bulk data processing tools.
 
-\begin{table}[]
+In principle, genome sequencing can be considered as measuring the nucleotide sequences of fragments that come the genome of interest. Each such measurement is called a \textit{read}. Naturally, each read is associated with a \textit{read length}, which is the length of each fragment sequenced, measured in base pairs. Characterized by their read lengths, the generation of sequencing technologies that boomed in the 2000s and early 2010s are called ``short-read sequencing'', and in the past decade we saw the development of ``long-read sequencing''. Below, you can find a table to overview these technologies.
+
+\begin{table}
 \begin{center}
 \begin{tabular}{|l|l|l|}
 \hline
-Sequencing technologies & Short-read & Long-read   \\
- &  &    \\
- &  &    \\
- &  &
+\makecell{\textbf{Sequencing technologies}} & \makecell{\textbf{Short-read}} & \makecell{\textbf{Long-read}} \\ \hline
+\makecell{\textbf{Currently prominent companies}} & \makecell{Illumina, Element Bio} &  \makecell{Oxford Nanopore, PacBio}  \\ \hline
+\makecell{\textbf{Read length}} & \makecell{Up to 2 $\times$ 300 bp} &  \makecell{N50 $\sim$25 kb (Nanopore) \\ 10--25 kb (PacBio)}  \\ \hline
+\makecell{\textbf{Other name}} & \makecell{Next generation sequencing} & \makecell{Third generation sequencing}   \\ \hline
+\makecell{\textbf{Cost per base}} & \makecell{Relatively cheaper} & \makecell{Relatively more expensive}   \\ \hline
 \end{tabular}
 \end{center}
+\caption{The most important differences between short-read and long-read sequencing technologies. \textbf{Disclaimer:} This list is meant to give an idea of the current technologies on the market and is by no means comprehensive. Read lengths differ between different platforms even within the same company. Do your own research.}
 \end{table}
 
 
