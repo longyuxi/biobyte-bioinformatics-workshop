@@ -9,6 +9,7 @@
 \usepackage{hyperref}
 \usepackage{cleveref}
 \usepackage{makecell}
+\graphicspath{{./imgs/}}
 
 \usepackage{minted}
 \newcommand{\code}[1]{\texttt{#1}}
@@ -77,13 +78,13 @@ Short-read DNA or RNA sequencing is cheap and fast, and generates a lot of data.
    \item Variant calling: GATK HaplotypeCaller
 \end{itemize}
 
-\textit{This workflow is largely adapted from the independent study of Hector de Galard in Fall 2019.}
+\textit{This workflow is largely adapted from the independent study of Hector de Galard in Fall 2019, and the \href{https://www.hadriengourle.com/wrangling-genomics/01-variant_calling_workflow/}{Wrangling Genomics workshop} by Data Carpentry.}
 
 \section{Short read sequencing}
 
 You have probably heard of Sanger sequencing from biology class. Sanger sequencing is considered the ``first generation'' of sequencing technologies. Later technologies improved on the \textit{throughput}, which is the amount of data generated per sequencing run, and the large amount of data generated allowed for amazing new research insights made by researchers around the world, but also necessitated the use of bulk data processing tools.
 
-In principle, genome sequencing can be considered as measuring the nucleotide sequences of fragments that come the genome of interest. Each such measurement is called a \textit{read}. Naturally, each read is associated with a \textit{read length}, which is the length of each fragment sequenced, measured in base pairs. Characterized by their read lengths, the generation of sequencing technologies that boomed in the 2000s and early 2010s are called ``short-read sequencing'', and in the past decade we saw the development of ``long-read sequencing''. Below, you can find a table to overview these technologies.
+In principle, genome sequencing can be considered as measuring the nucleotide sequences of fragments that come the genome of interest. Each such measurement is called a \textit{read}. Naturally, each read is associated with a \textit{read length}, which is the length of each fragment sequenced, measured in base pairs. Characterized by their read lengths, the generation of sequencing technologies that boomed in the 2000s and early 2010s are called ``short-read sequencing'', and in the past decade we saw the development of ``long-read sequencing''. Below, you can find a table to overview these technologies. Note that I am not distinguishing between DNA and RNA sequencing -- the same technologies are used for both types of nucleic acids, as transcription and reverse transcription allows one to convert from one type to the other.
 
 \begin{table}
 \begin{center}
@@ -96,12 +97,74 @@ In principle, genome sequencing can be considered as measuring the nucleotide se
 \makecell{\textbf{Cost per base}} & \makecell{Relatively cheaper} & \makecell{Relatively more expensive}   \\ \hline
 \end{tabular}
 \end{center}
-\caption{The most important differences between short-read and long-read sequencing technologies. \textbf{Disclaimer:} This list is meant to give an idea of the current technologies on the market and is by no means comprehensive. Read lengths differ between different platforms even within the same company. Do your own research.}
+\caption{The most important differences between short-read and long-read sequencing technologies. \textbf{Disclaimer:} This list is meant to give an idea of the current technologies on the market and is by no means comprehensive. Read lengths differ between different platforms within the same company. Do your own research.}
 \end{table}
 
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{genome_sequencing_cost.jpg}
+\caption{Sequencing cost has dropped rapidly in the past two decades. Source: \href{https://www.genome.gov/about-genomics/fact-sheets/Sequencing-Human-Genome-cost}{NIH}. This is largely due to advances in next generation sequencing.}
+\label{fig:genome-sequencing-cost}
+\end{figure}
 
-% With our current technology, it is much cheaper to perform \textit{short-read sequencing} than \textit{long-read sequencing}.
+Short-read sequencing is cheap. But there is a catch. Its short read length fundamentally limits the types of analyses that can be done on it. Just from the sequencing results, one cannot distinguish repeats of a genomic region that are longer than the read length. That means no tandem repeats. The first telomere-to-telomere sequence of the human genome was only published in 2022 (\href{https://www.science.org/doi/10.1126/science.abj6987}{Nurk et al., 2022}). On the other hand, short read sequencing is effective determining RNA expression, especially fueled by recent advances in spatial transcriptomics and single cell transcriptomics, which are essentially pre- and post-processing technologies layered on top of the existing sequencing platforms. In this workshop, we shall focus on variant calling, which is the process of identifying genomic mutations, from short-read sequencing data.
 
-% \textit{Short-read sequencing} is dominated by Illumina machines. The technology is amazing, but to a bioinformatics standpoint, what matters
+\section{The variant calling workflow}
+
+The heart of variant calling is to compare our sequencing data to a \textit{reference genome}. We wish to first \textit{align} each of our sequencing reads to the reference genome (that is, find our where that read most likely belongs, given there could be a few mutations). There are some processing steps for quality control before and after alignment. Then, \textit{variant calling} is done on the aligned reads, which finds the mutations we are after.
+
+A simplified workflow, which we will follow, can be found in \cref*{fig:simplified-varcall-workflow}. The full best practices workflow from the developers of Genome Analysis Toolkit (GATK) can be found in \cref*{fig:gatk-varcall-workflow}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.3\textwidth]{data_carpentry_variant_calling_workflow.png}
+\caption{Simplified variant calling workflow, from Data Carpentry.}
+\label{fig:simplified-varcall-workflow}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{gatk_varcall_workflow.png}
+\caption{Variant calling best practices, from GATK.}
+\label{fig:gatk-varcall-workflow}
+\end{figure}
+
+\subsection{Prerequisites}
+
+I wish to give a general workflow first for when you, the audience, shall use this workflow in your own research project. The ``raw materials'' are short-read sequencing data and a reference genome. If you are doing this in a lab, the sequencing data is given from the experiment (well duh!). The reference genome, on the other hand, can be found in the \href{https://www.ncbi.nlm.nih.gov/datasets/}{NCBI Datasets}. Enter a species name, and scroll down to download its reference genome (try it!).
+
+
+For example, the reference genome of a commonly used strain of \textit{E. coli}, O157:H7, can be found through searching NCBI Datasets (\href{https://www.ncbi.nlm.nih.gov/datasets/taxonomy/83334/}{you should find this page}). You can download the genome and find a \texttt{.fna} file starting with this
+
+\begin{minted}[breaklines]{text}
+>NC_002695.2 Escherichia coli O157:H7 str. Sakai DNA, complete genome
+AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTCTCTGACAGCAGCTTCTGAACTG
+GTTACCTGCCGTGAGTAAATTAAAATTTTATTGACTTAGGTCACTAAATACTTTAACCAATATAGGCATAGCGCACAGAC
+AGATAAAAATTACAGAGTACACAACATCCATGAAACGCATTAGCACCACCATTACCACCACCATCACCACCACCATCACC
+ATTACCATTACCACAGGTAACGGTGCGGGCTGACGCGTACAGGAAACACAGAAAAAAGCCCGCACCTGACAGTGCGGGCT
+...
+\end{minted}
+
+Here, the line starting with \texttt{>} is an information line about the sequence that follows and does not contain the genome (obviously). There, \texttt{NC\_002695.2} is a reference number that can can find this genome with on NCBI. Indeed, typing this number into a search box on the NCBI website, we can find \href{https://www.ncbi.nlm.nih.gov/nuccore/NC_002695.2/}{this page}, which shows us all the information about this reference genome. Take a moment to explore what information this page has.
+
+\subsection{Data formats}
+
+The above \textit{E. coli} reference genome is in the \textit{FASTA format}. There are only a couple of formats for genome information (\href{https://www.animalgenome.org/bioinfo/resources/manuals/seqformats}{See this link}). Importantly, all these formats are in plain text, so you can open them up in a text editor and see. You should familiarize yourself with these formats, because each of these formats can manifest itself in different file suffixes. For example, the file containing the above \textit{E. coli} sequence ends in \texttt{.fna} to indicate that it is a reference genome, but the format of its content doesn't differ from an ordinary \textit{FASTA} file a bit and don't need to be handled differently in a software. Common filename extensions for the FASTA format are \texttt{.fasta}, \texttt{.fa}, and \texttt{.fna}.
+
+An extension of the \textit{FASTA} format is the \textit{FASTQ} format, where the \textit{Q} stands for ``quality''. It is a format designed for raw results from genome sequencing, where in addition to the sequence of each read, there is also a confidence for the quality of each nucleotide in each read. You can find details on the FASTQ format \href{https://en.wikipedia.org/wiki/FASTQ_format}{on Wikipedia}.
+
+\section{Practice}
+
+You should have the following softwares installed. Depending on how you formatted your \texttt{\$PATH}, the exact commands invoking these softwares might be different, so I will also note the format of invoking these softwares during this tutorial.
+
+\begin{itemize}
+   \item fastp. \texttt{fastp ...}
+   \item BWA. \texttt{bwa ...}
+   \item Samtools. \texttt{samtools ...}
+   \item Picard tools. \texttt{java -jar picard.jar ...}
+   \item GATK. \texttt{gatk ...}
+\end{itemize}
+
+
 
 \end{document}
