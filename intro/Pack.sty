@@ -1,0 +1,41 @@
+\ProvidesPackage{MisPaquetes}
+
+%% FORMATO DEL DOCUMENTO
+\usepackage[spanish,es-noshorthands,english]{babel}
+\usepackage[a4paper,total={170mm,257mm},left=20mm,top=20mm]{geometry}
+\usepackage[utf8]{inputenc}%caracteres de entrada
+\usepackage[T1]{fontenc}%caracteres de salida
+\usepackage{lmodern}
+\usepackage{ragged2e}
+\usepackage{pdflscape}
+%\setlength\parindent{0pt}%.Quita la sangría al iniciar un nuevo párrafo
+
+%% DIBUJOS, TABLAS, FIGURAS, DIAGRAMAS
+\usepackage{array}%tablas
+\usepackage{wrapfig}%figuras
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{listings,theorems}
+\tcbuselibrary{skins}
+
+%% COLORES y COMANDOS
+\definecolor{Cerulean}{cmyk}{0.94,0.11,0,0}
+\definecolor{Dandelion}{cmyk}{0,0.29,0.84,0}
+\definecolor{MidnightBlue}{cmyk}{0.98,0.13,0,0.43}
+\definecolor{SpringGreen}{cmyk}{0.26,0,0.76,0}
+\definecolor{Peach}{cmyk}{0,0.50,0.70,0}
+%\newcommand{\mia}[1]{\textcolor{MidnightBlue}{#1}}
+
+%%HIPERVINCULOS, CITAS, ETIQUETAS, BIBLIOGRAFIA
+%\usepackage{hyperref}
+%\usepackage[colorlinks=true, citecolor=MidnightBlue, linkcolor=MidnightBlue, pagebackref=true]{hyperref}
+%\usepackage[colorlinks=true, citecolor=violet, linkcolor=cyan!90!black, pagebackref=true]{hyperref}
+\usepackage[colorlinks=true, citecolor=green, linkcolor=Peach, pagebackref=true]{hyperref}
+\usepackage[alphabetic]{amsrefs}
+\usepackage{upref}
+\usepackage{caption}
+\usepackage{bookmark}% faster updated bookmarks
+\usepackage[draft]{todonotes} %To include comments and feedback
+%\usepackage[notref,notcite]{showkeys}

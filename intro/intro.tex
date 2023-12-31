@@ -1,0 +1,83 @@
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage{quiver}
+\usepackage{Pack}
+\usepackage{PackMath}
+\usepackage[placement=bottom,angle=0,color=black!40,scale=3,hshift=88,vshift=5]{background}
+\usepackage{enumitem}
+\setlist{nosep}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{makecell}
+\graphicspath{{./imgs/}}
+
+\usepackage{minted}
+\newcommand{\code}[1]{\texttt{#1}}
+% \newenvironment{codeblock}{\VerbatimEnvironment \begin{minted}[linenos,breaklines]{python}}{\end{minted}}
+
+
+\backgroundsetup{contents={-\thepage-}}
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+   \hskip -\arraycolsep
+   \let\@ifnextchar\new@ifnextchar
+   \array{#1}}
+\makeatother
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{Introduction}
+\fancyhead[CE,CO]{Yuxi (Jaden) Long}
+\fancyhead[RE,LO]{Duke BioByte}
+%\fancyfoot[CE,CO]{}
+
+% For progress tracker
+\newcommand{\ns}{{\color{red} Not Started}}
+\newcommand{\ip}{{\color{orange} In Progress (Stuck)}}
+\newcommand{\td}{{\color{blue} In Progress (To-Do)}}
+\newcommand{\fin}{{\color{green} Finished}}
+\newcommand{\qm}{{\color{violet} Finshed, But In Doubt}}
+\newcommand{\contradiction}{\Rightarrow\!\Leftarrow}
+\renewcommand{\im}{\mathrm{im\,}}
+\renewcommand{\tilde}{\widetilde}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.5em}
+
+
+\usepackage{notomath}
+\usepackage{multicol}
+\newcommand{\Hint}{\textcolor{violet}{\textit{Hint: }}}
+\newcommand{\Solution}{\textcolor{MidnightBlue}{\textbf{Solution: }}}
+
+
+\title{\textbf{\\Workshop Series: Computational Tools for the Working Biologist}}
+\author{\textit{Duke BioByte, Spring 2024}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\thispagestyle{empty}
+
+\subsection{Introduction}
+
+Computational tools have become indispensable in the life sciences, yet tutorials on the Internet tend to be scattered and disjoint. In this workshop, we aim to give a jumpstart for life scientists on computational tools relevant to medicine, biology, and biochemistry. This course will place emphasis on \textbf{providing the fundamental knowledge that empowers students to self-learn future tools} (i.e. “teaching a man to fish”), and provide practice on some of the most important tools in bioinformatics and computational biology.
+
+Every week's tutorial will be introduced with the fundamentals of the topic, why it is important, and why we solve it the way we do, so that the student will be able to \textbf{use the tutorial as a starting point to gain independence in bioinformatics}. At the end of the course, the student should \textbf{be able to learn to use any software package presented in publications and replicate computational experiments on relevant datasets}.
+
+
+\subsection{Why this workshop is better than what you can find elsewhere}
+
+\begin{enumerate}
+   \item This workshop is made by William Yan and Yuxi ``Jaden'' Long. We both came from a life sciences background and are closely working with biologists and medical doctors. This course is \textbf{designed for students and scientists in the life sciences without any background in computer science}.
+   \item Softwares adapt and change over time, and different tasks require different tools. Rather than laboriously enumerating all software tools and how to use them, we focus on teaching \textbf{the skill of discovering what tools you need, and learning any software framework and tool from their documentation online}. The skills in this workshop can hopefully be transferred to any bioinformatics task you may encounter.
+   \item Each workshop will be self-contained, detailing both theory and a biologically-relevant workflow from beginning to end. This way, without much additional effort, you can \textbf{carry on the workflow to a similar research problem in your lab}.
+   \item Each workshop has a PDF like this, which you can download and reference later on, or even print out to reference at your lab bench.
+\end{enumerate}
+
+\subsection{Intended audience of this workshop}
+
+Biologists with little experience in bioinformatics is the primary intended audience of this workshop.
+
+\end{document}
