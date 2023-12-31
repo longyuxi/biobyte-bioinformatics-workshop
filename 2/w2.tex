@@ -183,70 +183,91 @@ This run is concerning \textit{E. coli O157:H7}, so we should also fetch its \hr
 
 \subsection{Quality control}
 
-\texttt{fastp -i reads.fastq.gz -o reads-processed.fastq.gz}
+\begin{enumerate}
+   \item See \href{https://github.com/OpenGene/fastp}{the documentation for fastp} for all that it does. \begin{minted}[breaklines]{text}
+   fastp -i reads.fastq.gz -o reads-processed.fastq.gz
+   \end{minted}
+\end{enumerate}
 
 \subsection{Sequence alignment}
 
 \subsubsection{Indexing the reference genome}
 
-\texttt{bwa index reference.fna}
-
-\texttt{samtools faidx reference.fna}
-
-\texttt{gatk CreateSequenceDictionary REFERENCE=reference.fna OUTPUT=reference.dict}
+\begin{enumerate}
+   \item \begin{minted}[breaklines]{text}
+   bwa index reference.fna
+   \end{minted}
+   \item \begin{minted}[breaklines]{text}
+   samtools faidx reference.fna
+   \end{minted}
+   \item \begin{minted}[breaklines]{text}
+   gatk CreateSequenceDictionary REFERENCE=reference.fna OUTPUT=reference.dict
+   \end{minted}
+\end{enumerate}
 
 \subsubsection{Alignment}
 
-\begin{itemize}
-   \item Single-threaded:
-   \begin{minted}[breaklines]{text}
-   bwa mem reference.fna reads-processed.fastq.gz > aligned.sam
-   \end{minted}
-   \item Multi-threaded (look up ``command substitution '' for what \texttt{\$(nproc)} means):
-   \begin{minted}[breaklines]{text}
-   bwa mem -t \$(nproc) reference.fna reads-processed.fastq.gz > aligned.sam
-   \end{minted}
-\end{itemize}
+\begin{enumerate}
+   \item Run BWA either single-threaded or multi-threaded. Multi-threaded is significantly faster, but single-threaded execution still completes within a reasonable amount of time due to the small size of the data we are dealing with.
+   \begin{itemize}
+      \item Single-threaded:
+      \begin{minted}[breaklines]{text}
+      bwa mem reference.fna reads-processed.fastq.gz > aligned.sam
+      \end{minted}
+      \item Multi-threaded (look up ``command substitution '' for what \texttt{\$(nproc)} means):
+      \begin{minted}[breaklines]{text}
+      bwa mem -t \$(nproc) reference.fna reads-processed.fastq.gz > aligned.sam
+      \end{minted}
+   \end{itemize}
+\end{enumerate}
 
 \subsubsection{Post alignment}
 
-\texttt{samtools view  -S -b aligned.sam > aligned.bam}
-
-\texttt{samtools sort aligned.bam -o aligned-sorted.bam}
-
-\texttt{samtools index aligned-sorted.bam}
-
-View with Tablet.
+\begin{enumerate}
+   \item Convert SAM file to a more efficient BAM file (B stands for binary). \begin{minted}[breaklines]{text}
+   samtools view  -S -b aligned.sam > aligned.bam
+   \end{minted}
+   \item Sort BAM file. \begin{minted}[breaklines]{text}
+   samtools sort aligned.bam -o aligned-sorted.bam
+   \end{minted}
+   \item Index BAM file. \begin{minted}[breaklines]{text}
+   samtools index aligned-sorted.bam
+   \end{minted}
+   \item View the resulting alignment (\texttt{aligned-sorted.bam}) with Tablet or some other alignment viewer.
+\end{enumerate}
 
 \subsection{Variant calling}
 
-\begin{minted}[breaklines]{text}
-gatk AddOrReplaceReadGroups I=aligned-sorted.bam O=aligned-rg.bam RGID=1 RGLB=A RGPL=Illumina RGPU=MiSeq RGSM=1
-\end{minted}
+\begin{enumerate}
+   \item Re-labeling the read groups. Not essential to the variant calling process but good practice.  \begin{minted}[breaklines]{text}
+   gatk AddOrReplaceReadGroups I=aligned-sorted.bam O=aligned-rg.bam RGID=1 RGLB=A RGPL=Illumina RGPU=MiSeq RGSM=1
+   \end{minted}
+   \item Mark duplicates. \begin{minted}[breaklines]{text}
+   gatk MarkDuplicates I=aligned-rg.bam O=aligned-md.bam M=aligned-metrics.txt
+   \end{minted}
+   \item Index the resulting file. \begin{minted}[breaklines]{text}
+   samtools index aligned-md.bam
+   \end{minted}
+   \item Run HaplotypeCaller to identify the variants in our sequencing data. \begin{minted}[breaklines]{text}
+   gatk HaplotypeCaller --native-pair-hmm-threads $(nproc) -R reference.fna -I aligned-md.bam -O aligned.g.vcf
+   \end{minted}
+   (took 3.4 minutes on my computer)
+   \item Open the resulting \texttt{aligned.g.vcf} with a spreadsheet viewer such as Microsoft Excel. This is a tab-separated file.
+\end{enumerate}
 
-
-\texttt{gatk MarkDuplicates I=aligned-rg.bam O=aligned-md.bam M=aligned-metrics.txt}
-
-\texttt{samtools index aligned-md.bam}
-
-\begin{minted}[breaklines]{text}
-gatk HaplotypeCaller --native-pair-hmm-threads $(nproc) -R reference.fna -I aligned-md.bam -O aligned.g.vcf
-\end{minted}
-
-(took 3.4 minutes on my computer)
-
-Open \texttt{.vcf} with a spreadsheet viewer such as Microsoft Excel. This is a tab-separated file.
 
 \textbf{Additional commands. Could be useful for when you have multiple sequencing runs that you want to compare against each other:}
 
-Run the HaplotypeCaller for each sequencing run that you will to include in the comparison, producing files like \texttt{aligned1-md.bam}, \texttt{aligned2-md.bam}, ... Then
+\begin{enumerate}
+   \item Run the HaplotypeCaller for each sequencing run that you will to include in the comparison, producing files like \texttt{aligned1-md.bam}, \texttt{aligned2-md.bam}, ...
+   \item Combine the alignments into a genomics database (GenomicsDB). \begin{minted}[breaklines]{text}
+   gatk GenomicsDBImport -V aligned1-md.bam -V aligned2-md.bam ... --genomics-workspace-path combined -L “reference-interval”
+   \end{minted}
+   \item Export the GenomicsDB into a VCF file. \begin{minted}[breaklines]{text}
+   gatk GenotypeGVCFs -R reference.txt -V -gendb://combined -O combined.vcf
+   \end{minted}
+   \item View the resulting VCF file with a spreadsheet viewer.
+\end{enumerate}
 
-\begin{minted}[breaklines]{text}
-gatk GenomicsDBImport -V aligned1-md.bam -V aligned2-md.bam ... --genomics-workspace-path combined -L “reference-interval”
-\end{minted}
-
-\begin{minted}[breaklines]{text}
-gatk GenotypeGVCFs -R reference.txt -V -gendb://combined -O combined.vcf
-\end{minted}
 
 \end{document}
