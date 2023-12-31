@@ -86,6 +86,8 @@ You have probably heard of Sanger sequencing from biology class. Sanger sequenci
 
 In principle, genome sequencing can be considered as measuring the nucleotide sequences of fragments that come the genome of interest. Each such measurement is called a \textit{read}. Naturally, each read is associated with a \textit{read length}, which is the length of each fragment sequenced, measured in base pairs. Characterized by their read lengths, the generation of sequencing technologies that boomed in the 2000s and early 2010s are called ``short-read sequencing'', and in the past decade we saw the development of ``long-read sequencing''. Below, you can find a table to overview these technologies. Note that I am not distinguishing between DNA and RNA sequencing -- the same technologies are used for both types of nucleic acids, as transcription and reverse transcription allows one to convert from one type to the other.
 
+Another important metric for genome sequencing is \textit{read depth}. The read depth of a certain base in the genome is the number of reads covering that base. As you may have guessed by now, we have the following formula:
+
 \begin{table}
 \begin{center}
 \begin{tabular}{|l|l|l|}
@@ -113,7 +115,7 @@ Short-read sequencing is cheap. But there is a catch. Its short read length fund
 
 The heart of variant calling is to compare our sequencing data to a \textit{reference genome}. We wish to first \textit{align} each of our sequencing reads to the reference genome (that is, find our where that read most likely belongs, given there could be a few mutations). There are some processing steps for quality control before and after alignment. Then, \textit{variant calling} is done on the aligned reads, which finds the mutations we are after.
 
-A simplified workflow, which we will follow, can be found in \cref*{fig:simplified-varcall-workflow}. The full best practices workflow from the developers of Genome Analysis Toolkit (GATK) can be found in \cref*{fig:gatk-varcall-workflow}.
+A simplified workflow, which we will follow, can be found in \cref*{fig:simplified-varcall-workflow}. The full best practices workflow from the developers of Genome Analysis Toolkit (GATK) can be found in \cref*{fig:gatk-varcall-workflow}. The hope is that, in practicing and understanding this basic workflow, you will be able to perform a basic analysis from beginning to end. When you are dexterous with this workflow, you can also add more moving parts to it without being overwhelmed.
 
 \begin{figure}[H]
 \centering
@@ -134,7 +136,7 @@ A simplified workflow, which we will follow, can be found in \cref*{fig:simplifi
 I wish to give a general workflow first for when you, the audience, shall use this workflow in your own research project. The ``raw materials'' are short-read sequencing data and a reference genome. If you are doing this in a lab, the sequencing data is given from the experiment (well duh!). The reference genome, on the other hand, can be found in the \href{https://www.ncbi.nlm.nih.gov/datasets/}{NCBI Datasets}. Enter a species name, and scroll down to download its reference genome (try it!).
 
 
-For example, the reference genome of a commonly used strain of \textit{E. coli}, O157:H7, can be found through searching NCBI Datasets (\href{https://www.ncbi.nlm.nih.gov/datasets/taxonomy/83334/}{you should find this page}). You can download the genome and find a \texttt{.fna} file starting with this
+For example, the reference genome of a common strain of \textit{E. coli}, O157:H7, can be found through searching NCBI Datasets (\href{https://www.ncbi.nlm.nih.gov/datasets/taxonomy/83334/}{you should find this page}). You can download the genome and find a \texttt{.fna} file starting with this
 
 \begin{minted}[breaklines]{text}
 >NC_002695.2 Escherichia coli O157:H7 str. Sakai DNA, complete genome
@@ -149,22 +151,102 @@ Here, the line starting with \texttt{>} is an information line about the sequenc
 
 \subsection{Data formats}
 
-The above \textit{E. coli} reference genome is in the \textit{FASTA format}. There are only a couple of formats for genome information (\href{https://www.animalgenome.org/bioinfo/resources/manuals/seqformats}{See this link}). Importantly, all these formats are in plain text, so you can open them up in a text editor and see. You should familiarize yourself with these formats, because each of these formats can manifest itself in different file suffixes. For example, the file containing the above \textit{E. coli} sequence ends in \texttt{.fna} to indicate that it is a reference genome, but the format of its content doesn't differ from an ordinary \textit{FASTA} file a bit and don't need to be handled differently in a software. Common filename extensions for the FASTA format are \texttt{.fasta}, \texttt{.fa}, and \texttt{.fna}.
+The above \textit{E. coli} reference genome is in the \textit{FASTA format}. There are only a couple of important formats for genome information (\href{https://www.animalgenome.org/bioinfo/resources/manuals/seqformats}{See this link}). Importantly, all these formats are in plain text, so you can open them up in a text editor and see. You should familiarize yourself with these formats, because each of these formats can manifest itself in different file suffixes. For example, the file containing the above \textit{E. coli} sequence ends in \texttt{.fna} to indicate that it is a reference genome, but the format of its content doesn't differ from an ordinary \textit{FASTA} file a bit and don't need to be handled differently in a software. Common filename extensions for the FASTA format are \texttt{.fasta}, \texttt{.fa}, and \texttt{.fna}.
 
-An extension of the \textit{FASTA} format is the \textit{FASTQ} format, where the \textit{Q} stands for ``quality''. It is a format designed for raw results from genome sequencing, where in addition to the sequence of each read, there is also a confidence for the quality of each nucleotide in each read. You can find details on the FASTQ format \href{https://en.wikipedia.org/wiki/FASTQ_format}{on Wikipedia}.
+An extension of the \textit{FASTA} format is the \textit{FASTQ} format, where the \textit{Q} stands for ``quality''. It is a format designed for raw results from genome sequencing, where in addition to the sequence of each read, there is also a confidence for the quality of each nucleotide in each read. You can find details on the FASTQ format \href{https://en.wikipedia.org/wiki/FASTQ_format}{on Wikipedia}. Different sequencing platforms could have different specialized formats, but FASTQ is a good starting point and the format used by the widely popular Illumina sequencers.
 
 \section{Practice}
 
-You should have the following softwares installed. Depending on how you formatted your \texttt{\$PATH}, the exact commands invoking these softwares might be different, so I will also note the format of invoking these softwares during this tutorial.
+You should have the following softwares installed as assignment from the last workshop. Depending on how you formatted your \texttt{\$PATH} (see Workshop 1 if you are not familiar), the exact commands invoking these softwares might be different, so I will also note the format of invoking these softwares during this tutorial.
 
 \begin{itemize}
    \item fastp. \texttt{fastp ...}
    \item BWA. \texttt{bwa ...}
    \item Samtools. \texttt{samtools ...}
-   \item Picard tools. \texttt{java -jar picard.jar ...}
    \item GATK. \texttt{gatk ...}
+   \item Picard tools. It turns out that since the release of GATK4, Picard tools are included inside of gatk. So the commands to invoke the Picard tools is also \texttt{gatk ...}
+   \item Tablet. This is a GUI-based software so as long as you can open it, we are good.
 \end{itemize}
 
+On a separate note, all the above tools but Picard happens to be on Bioconda, so they can be quite easily installed with Conda or its faster derivative Mamba after \href{https://bioconda.github.io/}{setting up the Bioconda channel}, using the command
 
+\texttt{mamba create -n biobyte-workshop samtools fastp bwa gatk4}
+
+I have held back from mentioning environment management until the Python workshop, but this is a nice peek ahead.
+
+
+\subsection{Example data}
+
+For this tutorial, we will use the \href{https://www.ncbi.nlm.nih.gov/sra}{NCBI Sequencing Read Archive (SRA)} to find example data. SRA is an open repository of genome sequence data from experiments. Arbitrarily, I have selected \href{https://www.ncbi.nlm.nih.gov/sra/SRR7262824}{the run with accession SRR7262824} as our data today. You can download the sequencing data directly from NCBI, and I have also \href{https://duke.box.com/s/jtu2wv1agbo2kp60z0k1mt9oos9b8v1k}{uploaded it on Box} for faster downloads. Either way, you should end up with a file \texttt{SRR7262824.fastq.gz}. For sake of clarity, rename this file to \texttt{reads.fastq.gz}.
+
+This run is concerning \textit{E. coli O157:H7}, so we should also fetch its \href{https://www.ncbi.nlm.nih.gov/datasets/taxonomy/83334/}{reference genome}. Upon unzipping the file you downloaded from NCBI, you should eventually come upon two files, one starting with \texttt{GCF} and one starting with \texttt{GCA}. There are minor differences between the genomes in these two folders (detailed on \href{https://www.ncbi.nlm.nih.gov/assembly/model/}{this page}). We shall use the one starting with \texttt{GCF} (i.e. \texttt{GCF\_000008865.2\_ASM886v2\_genomic.fna}). Rename this reference file to \texttt{reference.fna}. Put \texttt{reads.fastq.gz} and \texttt{reference.fna} in the same folder. Start a terminal inside this folder, and we shall begin.
+
+\subsection{Quality control}
+
+\texttt{fastp -i reads.fastq.gz -o reads-processed.fastq.gz}
+
+\subsection{Sequence alignment}
+
+\subsubsection{Indexing the reference genome}
+
+\texttt{bwa index reference.fna}
+
+\texttt{samtools faidx reference.fna}
+
+\texttt{gatk CreateSequenceDictionary REFERENCE=reference.fna OUTPUT=reference.dict}
+
+\subsubsection{Alignment}
+
+\begin{itemize}
+   \item Single-threaded:
+   \begin{minted}[breaklines]{text}
+   bwa mem reference.fna reads-processed.fastq.gz > aligned.sam
+   \end{minted}
+   \item Multi-threaded (look up ``command substitution '' for what \texttt{\$(nproc)} means):
+   \begin{minted}[breaklines]{text}
+   bwa mem -t \$(nproc) reference.fna reads-processed.fastq.gz > aligned.sam
+   \end{minted}
+\end{itemize}
+
+\subsubsection{Post alignment}
+
+\texttt{samtools view  -S -b aligned.sam > aligned.bam}
+
+\texttt{samtools sort aligned.bam -o aligned-sorted.bam}
+
+\texttt{samtools index aligned-sorted.bam}
+
+View with Tablet.
+
+\subsection{Variant calling}
+
+\begin{minted}[breaklines]{text}
+gatk AddOrReplaceReadGroups I=aligned-sorted.bam O=aligned-rg.bam RGID=1 RGLB=A RGPL=Illumina RGPU=MiSeq RGSM=1
+\end{minted}
+
+
+\texttt{gatk MarkDuplicates I=aligned-rg.bam O=aligned-md.bam M=aligned-metrics.txt}
+
+\texttt{samtools index aligned-md.bam}
+
+\begin{minted}[breaklines]{text}
+gatk HaplotypeCaller --native-pair-hmm-threads $(nproc) -R reference.fna -I aligned-md.bam -O aligned.g.vcf
+\end{minted}
+
+(took 3.4 minutes on my computer)
+
+Open \texttt{.vcf} with a spreadsheet viewer such as Microsoft Excel. This is a tab-separated file.
+
+\textbf{Additional commands. Could be useful for when you have multiple sequencing runs that you want to compare against each other:}
+
+Run the HaplotypeCaller for each sequencing run that you will to include in the comparison, producing files like \texttt{aligned1-md.bam}, \texttt{aligned2-md.bam}, ... Then
+
+\begin{minted}[breaklines]{text}
+gatk GenomicsDBImport -V aligned1-md.bam -V aligned2-md.bam ... --genomics-workspace-path combined -L “reference-interval”
+\end{minted}
+
+\begin{minted}[breaklines]{text}
+gatk GenotypeGVCFs -R reference.txt -V -gendb://combined -O combined.vcf
+\end{minted}
 
 \end{document}
