@@ -78,7 +78,7 @@ Short-read DNA or RNA sequencing is cheap and fast, and generates a lot of data.
    \item Variant calling: GATK HaplotypeCaller
 \end{itemize}
 
-\textit{This workflow is largely adapted from the independent study of Hector de Galard in Fall 2019, and the \href{https://www.hadriengourle.com/wrangling-genomics/01-variant_calling_workflow/}{Wrangling Genomics workshop} by Data Carpentry.}
+\textit{This workflow is largely adapted from the independent study of Hector de Galard in Fall 2019 (\href{https://github.com/longyuxi/biobyte-bioinformatics-workshop/blob/main/2/supplement/Hector_19L22.docx}{his report}), and the \href{https://www.hadriengourle.com/wrangling-genomics/01-variant_calling_workflow/}{Wrangling Genomics workshop} by Data Carpentry.}
 
 \section{Short read sequencing}
 
@@ -216,7 +216,7 @@ This run is concerning \textit{E. coli O157:H7}, so we should also fetch its \hr
       \end{minted}
       \item Multi-threaded (look up ``command substitution '' for what \texttt{\$(nproc)} means):
       \begin{minted}[breaklines]{text}
-      bwa mem -t \$(nproc) reference.fna reads-processed.fastq.gz > aligned.sam
+      bwa mem -t $(nproc) reference.fna reads-processed.fastq.gz > aligned.sam
       \end{minted}
    \end{itemize}
 \end{enumerate}
