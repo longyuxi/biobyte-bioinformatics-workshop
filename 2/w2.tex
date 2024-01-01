@@ -255,8 +255,11 @@ This run is concerning \textit{E. coli O157:H7}, so we should also fetch its \hr
    \item Open the resulting \texttt{aligned.g.vcf} with a spreadsheet viewer such as Microsoft Excel. This is a tab-separated file.
 \end{enumerate}
 
+\section{Additional thoughts}
 
-\textbf{Additional commands. Could be useful for when you have multiple sequencing runs that you want to compare against each other:}
+\subsection{}
+
+If you have multiple sequencing runs that you want to compare against each other, the following commands will let you create multiple variant calls and merge them together:
 
 \begin{enumerate}
    \item Run the HaplotypeCaller for each sequencing run that you will to include in the comparison, producing files like \texttt{aligned1-md.bam}, \texttt{aligned2-md.bam}, ...
@@ -268,6 +271,15 @@ This run is concerning \textit{E. coli O157:H7}, so we should also fetch its \hr
    \end{minted}
    \item View the resulting VCF file with a spreadsheet viewer.
 \end{enumerate}
+
+\subsection{}
+
+If the sequence data that you have is very large, you may consider running the commands on a remote server such that you can leave the execution running and come back later. In this case, the tool \href{https://www.gnu.org/software/screen/}{GNU screen} can be very helpful. GNU screen allows you do exit out of a SSH terminal session while still keeping the terminal running.
+
+\subsection{}
+
+If you have a lot of sequencing data that want to process in batch (e.g. when variant calling for multiple sequence runs), you may consider using a bash script to automate the whole process. A good starting point can be this script in my GitHub: \href{https://github.com/longyuxi/dew-lover/blob/master/align.sh}{longyuxi/dew-lover/align.sh}.
+
 
 
 \end{document}
