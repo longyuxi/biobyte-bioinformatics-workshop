@@ -1,0 +1,174 @@
+---
+title: "scRNA-seq Analysis"
+format: pdf
+editor: visual
+---
+
+# Duke Biobyte PBMC scRNA-seq analysis
+
+modified from <https://satijalab.org/seurat/articles/pbmc3k_tutorial.html>
+
+The goal of this project is to analyze a control dataset of peripheral blood mononuclear cells (PBMC) and cluster them into distinct cell types such as Natural killer cell, CD8 T cells etc. This would set up the baseline for future comparison with PBMC cell populations from disease samples in order to identify gene expression changes in specific cell types between disease and healthy PBMC.
+
+Cells in the same cell type have similar levels of gene expression. You can imagine a high dimension space (\~20000D) where each axis is a gene. Cells would be individual points in this space. The cells in proximity to each other likely belong to the same cell type. However, analyzing such high dimension space involves many noises and are computationally expansive. We will use dimension reduction PCA and a K-nearest-neighbor algorithm to cluster cells into unique cell types.
+
+## Data & Package Import
+
+tidyverse: data manipulation
+
+seurat: scRNA-seq analysis
+
+pathwork: plotting and visualization
+
+```{r}
+library(tidyverse)
+library(Seurat)
+library(patchwork)
+```
+
+```{r}
+# Load the PBMC dataset
+pbmc.data = Read10X(data.dir = "Data/ws3_pbmc_ds")
+# Initialize the Seurat object with the raw (non-normalized data).
+pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells = 3, min.features = 200)
+pbmc
+```
+
+## Quality Control
+
+Common features to consider:
+
+-   nFeature_RNA: the number of unique genes detected in each cell.
+
+    -   Low-quality cells or empty droplets will often have very few genes
+
+    -   Cell doublets or multiplets may exhibit an aberrantly high gene count
+
+-   nCount_RNA: the total number of molecules detected within a cell (correlates strongly with unique genes)
+
+-   The percentage of reads that map to the mitochondrial genome
+
+    -   Low-quality / dying cells often exhibit extensive mitochondrial contamination
+
+```{r}
+#Create a QC metric obejct in metadata using [[]]
+pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
+```
+
+View meta data and we can see the new percent.mt QC metric
+
+```{r}
+pbmc@meta.data
+```
+
+Visualize the QC metrics via violin plot
+
+```{r}
+# Visualize QC metrics as a violin plot
+VlnPlot(pbmc, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+```
+
+Subset() function allow us to filter cells we want
+
+-   Filter cells that have unique feature counts over 2,500 or less than 200
+
+-   Filter cells that have \>5% mitochondrial counts
+
+```{r}
+pbmc <- subset(pbmc, subset = nFeature_RNA > 200 & nFeature_RNA < 2500 & percent.mt < 5)
+```
+
+## Normalization
+
+```{r}
+pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
+```
+
+## Clustering
+
+We calculate a subset of features that exhibit high cell-to-cell variation in the dataset (i.e, they are highly expressed in some cells, and lowly expressed in others). Focusing on these genes in downstream analysis reduces noise and helps to highlight biological signal in single-cell datasets.
+
+```{r}
+pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 2000)
+
+# Identify the 10 most highly variable genes
+top10 <- head(VariableFeatures(pbmc), 10)
+
+# plot variable features with and without labels
+plot1 <- VariableFeaturePlot(pbmc)
+plot1
+```
+
+**Scale Data**
+
+Next, we apply a linear transformation (‘scaling’) that is a standard pre-processing step prior to dimensional reduction techniques like PCA. The [`ScaleData()`](https://satijalab.org/seurat/reference/scaledata) function:
+
+-   Shifts the expression of each gene, so that the mean expression across cells is 0
+
+-   Scales the expression of each gene, so that the variance across cells is 1
+
+-   The results of this are stored in `pbmc[["RNA"]]$scale.data`
+
+```{r}
+all.genes <- rownames(pbmc)
+pbmc <- ScaleData(pbmc, features = all.genes)
+```
+
+Next, we perform dimensional reduction with PCA. In genomics analysis, there are often more variables (features or dimensions) than observations (samples or data points). This can lead to challenges in analysis and visualization. PCA addresses this issue by identifying new sets of orthogonal axes (principal components) that capture the maximum variance in the data.
+
+```{r}
+#Run PCA
+pbmc <- RunPCA(pbmc, features = VariableFeatures(object = pbmc))
+# Print Principle Components
+print(pbmc[["pca"]], dims = 1:5, nfeatures = 5)
+```
+
+View PCA
+
+```{r}
+DimPlot(pbmc, reduction = "pca") + NoLegend()
+```
+
+Elbow plot --\> determine how many PCs to use
+
+```{r}
+ElbowPlot(pbmc)
+```
+
+we can observe an 'elbow' around PC9-10, suggesting that the majority of true signal is captured in the first 10 PCs
+
+We next use the FindNeighbors() function, which employs a KNN algorithm, to cluster cells using PCA axis we selected. Resolution sets the granularity of analysis. Greater resolution leads to greater number of clusters.
+
+```{r}
+#Find neighbor
+pbmc <- FindNeighbors(pbmc, dims = 1:9) #dim we got from elbow plot
+pbmc <- FindClusters(pbmc, resolution = 0.4)
+#resolution between 0.4-1.2 yeilds the best result
+```
+
+UMAP dimension reduction
+
+```{r}
+pbmc <- RunUMAP(pbmc, dims = 1:9)
+DimPlot(pbmc, reduction = "umap")
+```
+
+Let's visualize B cell markers MS4A1 and CD79A
+
+```{r}
+FeaturePlot(pbmc, features = c("MS4A1", "CD79A"))
+```
+
+```{r}
+VlnPlot(pbmc, features = c("MS4A1", "CD79A"))
+```
+
+Cluster 3 is B cell
+
+```{r}
+new.cluster.ids <- c("NAME0", "NAME1", "NAME2", "B cell", "NAME4", "NAME5", "NAME6","NAME7", "NAME8", "NAME9")
+names(new.cluster.ids) <- levels(pbmc)
+pbmc <- RenameIdents(pbmc, new.cluster.ids)
+DimPlot(pbmc, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend()
+
+```
