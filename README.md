@@ -23,9 +23,18 @@ Biologists with **no experience to intermediate experience in bioinformatics or 
 
 # Outline
 
-1. [Introduction](intro/)
+1. [Introduction to the workshop series](intro/)
 2. [Workshop 1: Talking to a Computer: Fundamentals of the Command Line](1/)
+
+    You heard about this great software tool, but you have no idea where to type all the monospaced text that appears in its tutorial. Let's solve that.
+
 3. [Workshop 2: Sequence Alignment and Variant Calling](2/)
+
+
+    Short-read DNA or RNA sequencing is cheap and fast, and generates a lot of data. As a result, genomics is the most relevant and fundamental computational task that a biologist would encounter.
+
 4. [Workshop 3: Single-cell RNA sequencing analysis with PCA and UMAP](3/)
+
+    The goal of this project is to analyze a control dataset of peripheral blood mononuclear cells (PBMC) and cluster them into distinct cell types such as Natural killer cell, CD8 T cells etc. This would set up the baseline for future comparison with PBMC cell populations from disease samples in order to identify gene expression changes in specific cell types between disease and healthy PBMC.
 
 
