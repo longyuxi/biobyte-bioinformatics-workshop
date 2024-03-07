@@ -1,0 +1,221 @@
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage{quiver}
+\usepackage{Pack}
+\usepackage{PackMath}
+\usepackage[placement=bottom,angle=0,color=black!40,scale=3,hshift=88,vshift=5]{background}
+\usepackage{enumitem}
+\setlist{nosep}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{makecell}
+\graphicspath{{./imgs/}}
+
+\usepackage{minted}
+\newcommand{\code}[1]{\texttt{#1}}
+% \newenvironment{codeblock}{\VerbatimEnvironment \begin{minted}[linenos,breaklines]{python}}{\end{minted}}
+
+
+\backgroundsetup{contents={-\thepage-}}
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+   \hskip -\arraycolsep
+   \let\@ifnextchar\new@ifnextchar
+   \array{#1}}
+\makeatother
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{Workshop 4}
+\fancyhead[CE,CO]{Yuxi (Jaden) Long}
+\fancyhead[RE,LO]{Duke BioByte}
+%\fancyfoot[CE,CO]{}
+
+% For progress tracker
+\newcommand{\ns}{{\color{red} Not Started}}
+\newcommand{\ip}{{\color{orange} In Progress (Stuck)}}
+\newcommand{\td}{{\color{blue} In Progress (To-Do)}}
+\newcommand{\fin}{{\color{green} Finished}}
+\newcommand{\qm}{{\color{violet} Finshed, But In Doubt}}
+\newcommand{\contradiction}{\Rightarrow\!\Leftarrow}
+\renewcommand{\im}{\mathrm{im\,}}
+\renewcommand{\tilde}{\widetilde}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.5em}
+
+
+\usepackage{notomath}
+\usepackage{multicol}
+\newcommand{\Hint}{\textcolor{violet}{\textit{Hint: }}}
+\newcommand{\Solution}{\textcolor{MidnightBlue}{\textbf{Solution: }}}
+
+
+\title{\textbf{Fundamentals of Python for Biomedical Data Analysis}}
+\author{\textit{Computational Tools for the Working Biologist. Workshop 4}}
+\date{Yuxi (Jaden) Long}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\vspace{1em}
+
+\noindent
+% Computational softwares generate large amounts of data. How do you handle them? Probably not Excel, right? You have learned R from the last workshop.
+
+% Python is such a versatile programming language, from basic data wrangling to machine learning. Let's get some hands on.
+
+You probably used Python before in a very guided environment (e.g., in an introductory programming course or for a very specific project), but it is a huge step-up from that to using Python for an independent project. Let's cover some of this gap.
+
+\noindent
+\textbf{Central idea/technique:} Using a script can accelerate your work that was previously done by hand. Python is an especially friendly language for generic tasks, from data wrangling to machine learning. You have probably learned Python before, and this workshop aims to cover edges which pertain to applying Python to real data that I, personally, had to scavenge outside of any formal education setting.
+
+\textbf{Prerequisite:} A basic knowledge of Python. This workshop aims to explain materials that pertain to practice but are not covered in an introductory course, largely inspired by \href{https://missing.csail.mit.edu/}{The Missing Semester of Your CS Education}.
+
+\textbf{Practice:} \todo{}
+
+\begin{itemize}
+   \item \todo{}
+\end{itemize}
+
+\section{Modules}
+
+You've seen modules before. Any data scientist will likely have written the following lines at least a dozen times:
+
+\begin{minted}[breaklines]{python}
+import pandas as pd
+
+df = pd.DataFrame(...)
+\end{minted}
+
+But have you wondered where even did \texttt{pd} come from? Sure, it resulted from \texttt{pip install pandas} or something similar, but what did that command actually do? You might have heard that modules are just functions imported from elsewhere, so how does this connect with the familiar \texttt{pip install x} followed by \texttt{import x} workflow? This is a matter often not taught in a first computer science class and can be confusing in practice.
+
+\subsection{Search paths}
+
+\textit{(This subsection is largely adapted from \href{https://docs.python.org/3/tutorial/modules.html}{the Python documentation}) on modules.}
+
+A \textbf{module} is a file containing Python definitions and statements. The file name is the module name with the suffix \texttt{.py} appended.
+
+For example, if we create a file called \texttt{A.py} with the following contents
+
+\begin{minted}[breaklines]{python}
+def B():
+   ...
+
+class C:
+   ...
+\end{minted}
+
+If we use \texttt{A.py} as a module, we should be able to, in another file, write something like the following and use the definitions in \texttt{A.py}:
+
+\begin{minted}[breaklines]{python}
+import A
+
+A.B()
+A.C()
+\end{minted}
+
+or equivalently
+
+\begin{minted}[breaklines]{python}
+from A import B, C
+
+B()
+C()
+\end{minted}
+
+When you write import statements like \texttt{import A} or \texttt{from A import B, C}, the Python interpreter first searches through a list of built-in modules with the name \texttt{A}. If not found, it then searches for a file named \texttt{A.py} in a list of directories given by the variable \texttt{sys.path}. \texttt{sys.path} is initialized from these locations:
+
+\begin{itemize}
+   \item The directory containing the input script (or the current directory when no file is specified).
+   \item \texttt{PYTHONPATH} (a list of directory names, with the same syntax as the shell variable \texttt{PATH}).
+   \item The installation-dependent default (by convention including a \texttt{site-packages} directory, handled by the site module).
+\end{itemize}
+
+So you can invoke \texttt{import A} from any file that is in the same directory as \texttt{A.py}. Sweet!
+
+\subsection{Package manager and environment management}
+
+But what if you want to use the modules that others have written? Based on the description above, it seems that you will need to download whichever script you are interested in, and carefully organize them in a folder. Worse, some of these modules might depend on another (e.g. a scientific computing script could naturally depend on \verb|numpy|). \textbf{Package managers} come to the rescue.
+
+The two main package managers for Python are \textbf{pip} and \textbf{conda}. They behave in vastly different ways.
+
+\verb|pip| does essentially what you would do while installing a package. To install a package, you would execute
+
+\verb|$ pip install <package>|
+
+\verb|pip| then discovers the dependencies of \verb|<package>| (i.e., the packages that need to be installed prior to \verb|<package>|), and installs them along \verb|<package>| into the \verb|site-packages| folder.
+
+\verb|conda| (and its derivative \verb|mamba|, which I am using) on the other hand is more of an \textbf{environment} manager. When you run \verb|conda|, it controls all the environmental variables as well, like \verb|PYTHONPATH| and \verb|PATH|. So you can have multiple different versions of Python living harmoniously together on your computer, and you can switch between environments to change the default Python interpreter.
+
+When conda is activated, your command line is prefixed with the environment that you are in, by default the \verb|base| environment.
+
+\begin{minted}[breaklines]{text}
+(base) $ mamba create -n env1 python=2.7
+(base) $ mamba activate env1
+(env1) $ python
+Python 2.7.15 | packaged by conda-forge | (default, Mar  5 2020, 14:56:06)
+[GCC 7.3.0] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>>
+
+(env1) $ mamba create -n env2 python=3.10
+(env1) $ mamba activate env2
+(env2) $ python
+Python 3.10.13 | packaged by conda-forge | (main, Dec 23 2023, 15:36:39) [GCC 12.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>>
+\end{minted}
+
+This environment switching all seems very fancy until you find out that \verb|conda| is just changing the \verb|PATH| variable to change which Python interpreter is discovered when you run \verb|python|:
+
+\begin{minted}[breaklines]{text}
+(env2) $ which python
+/home/longyuxi/mambaforge/envs/env2/bin/python
+(env2) $ mamba activate env1
+(env1) $ which python
+/home/longyuxi/mambaforge/envs/env1/bin/python
+\end{minted}
+
+And you can run the Python interpreter from within another environment by directly calling its executable (for example, calling the Python in env2 from env1):
+
+\begin{minted}[breaklines]{text}
+(env1) $ /home/longyuxi/mambaforge/envs/env2/bin/python
+Python 3.10.13 | packaged by conda-forge | (main, Dec 23 2023, 15:36:39) [GCC 12.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>>
+\end{minted}
+
+And a final perk of \verb|conda| is that, since it manages your \verb|PATH| too, you can use it as a tool to install general command-line softwares. I wrote in Workshop 2 that you can install all of the softwares needed for that workshop by simply running
+
+\begin{minted}[breaklines]{text}
+mamba create -n biobyte-workshop samtools fastp bwa gatk4
+\end{minted}
+
+And now you should understand how this works.
+
+
+\subsection{Special variables}
+
+A \textbf{special variable} in Python associated to a class or object is a variable defined using double underscores. They are used for special purposes in the code.
+
+To find where a module is imported from, we can use the \verb|__file__| special variable:
+
+\begin{minted}[breaklines,breakanywhere]{python}
+>>> import pandas as pd
+>>> pd.__file__
+'/home/longyuxi/miniconda3/envs/donaldlab/lib/python3.10/site-packages/pandas/__init__.py'
+\end{minted}
+
+There are a handful of other useful special variables in Python. Look up ``special variables in Python'' and you will find a good number of resources (like \href{https://gamedevacademy.org/python-special-variable-name-tutorial-complete-guide/}{this}).
+
+\section{Jupyter notebook}
+
+\subsection{importlib}
+
+(Save for Jupyter notebook section)
+
+
+
+\end{document}
