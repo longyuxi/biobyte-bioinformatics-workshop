@@ -126,7 +126,15 @@ $ which ls
 /usr/bin/ls
 \end{minted}
 
-This tells us the \texttt{ls} executable we used is located at \texttt{/usr/bin/ls}. When executing an executable, we can also use its path (\cref*{sec:path}) to execute it. In other words, the command \texttt{/usr/bin/ls -l /} is equivalent to \texttt{ls -l /}.
+If you get something like \texttt{ls: aliased to ls -G}, then try
+
+\begin{minted}[breaklines]{text}
+$ type -a ls
+ls is an alias for ls -G
+ls is /bin/ls
+\end{minted}
+
+This tells us the path of the executable behind the \texttt{ls} command we just invoked. When executing an executable, we can also use its path (\cref*{sec:path}) to execute it. In other words, the command \texttt{/usr/bin/ls -l /} is equivalent to \texttt{ls -l /}.
 
 The audience interested in what \texttt{\$PATH} is can read more about \textbf{environment variables}.
 
